@@ -69,19 +69,12 @@
             console.clear();
             console.table(allExpenses);
 
-            //show the table here
-            const data0 = allExpenses[0];
-            const data1 = allExpenses[1];
-
-            const data0Text = `${data0.expense} :: ${data0.description}`;
-            const data1Text = `${data1.expense} :: ${data1.description}`;
-
-            const tableText = `
-                <div>${data0Text}</div>
-                <div>${data1Text}</div>
-            `;
-
-            expenseTableEl.innerHTML = tableText;
+            //show the table here\
+            const allExpenseHtml = allExpenses.map(expense => {
+                return `<div>${expense.expense} :: ${expense.description}</div>`;
+            }).join('');
+            expenseTableEl.innerHTML = allExpenseHtml;
+            console.log(allExpenseHtml);
         }
 
         //get the button element
