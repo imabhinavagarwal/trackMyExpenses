@@ -5,23 +5,75 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Expense</title>
-    <style>
-        body{
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-        }
-    </style>
+    <link 
+        rel="stylesheet" 
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossorigin="anonymous"
+    />
+    <script
+		defer
+		src="https://use.fontawesome.com/releases/v5.7.2/js/all.js"
+		integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP"
+		crossorigin="anonymous"
+	></script>
 </head>
 <body>
-    <h1 id="totalExpenseHeading"></h1>
-    <input id="inputAmount", type="text">
-    <input id="inputDesc", type="text">
-    <div id="expenseTable"></div>
-
-    <button id="btnAddExpense">+</button>
+    <nav class="navbar navbar-dark bg-dark">
+        <span class="navbar-brand mb-0 h1">Xpense</span>
+    </nav>
+    <div class="container-fluid bg-light" style="min-height: 100vh;">
+        <div class="container">
+            <div class="jumbotron mt-4">
+                <div class="input-group mb-3">
+                    <input
+                        id="inputAmount"
+                        type="text"
+                        class="form-control"
+                        placeholder="Amount Spent"
+                        aria-placeholder="Amount Spent"
+                        aria-describedby="spent in rupees"
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="spent in rupee">
+                            <i class="fas fa-rupee-sign"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="spent at">@</span>
+                    </div>
+                    <input
+                        id="inputDesc"
+                        type="text"
+                        class="form-control"
+                        placeholder="spent on"
+                        aria-placeholder="spent on"
+                        aria-describedby="spent at"
+                    />
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-primary" id="button-addon2">Add</button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <ul class="list-group" id="expenseTable">
+                </ul>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <div class="d-flex flex-column">
+                            Total Expense
+                        </div>
+                        <div>
+                            <i class="fas fa-rupee-sign"></i>
+                            <span class="px-5" id="totalExpenseHeading"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <script>
         //get heading element
         const totalExpenseEl = document.querySelector("#totalExpenseHeading");
@@ -53,35 +105,52 @@
             const expense = parseInt(inputValue, 10);
 
             //add to object
-            expenseItem.expense = expense;
+            expenseItem.amount = expense;
             expenseItem.description = descValue;
 
             //add to total expense
             totalExpense = totalExpense + expense;
 
             //set heading element to total expense
-            const someText = `The expense for this month is ${totalExpense}`;
+            const someText = `${totalExpense}`;
             totalExpenseEl.textContent = someText;
 
             expenseItem.totalExpense = totalExpense;
 
             allExpenses.push(expenseItem);
-            console.clear();
-            console.table(allExpenses);
 
             //show the table here\
-            const allExpenseHtml = allExpenses.map(expense => {
-                return `<div>${expense.expense} :: ${expense.description}</div>`;
-            }).join('');
-            expenseTableEl.innerHTML = allExpenseHtml;
+            const allExpenseHtml = allExpenses.map(expenseItem => createItemList(expenseItem)).join('');
+            console.clear();
             console.log(allExpenseHtml);
+            expenseTableEl.innerHTML = allExpenseHtml;
+            inputExpenseEl.value = "";
+            inputDescEl.value = "";
         }
 
         //get the button element
-        const buttonEl = document.querySelector("#btnAddExpense");
+        const buttonEl = document.querySelector("#button-addon2");
         
         //listen to click event
         buttonEl.addEventListener("click", addExpenseToTotal, false);
+
+        //View layer
+        function createItemList({ description, amount }) {
+            return `
+                <li class="list-group-item d-flex justify-content-between">
+                        <div class="d-flex flex-column">
+                            ${description}
+                            <small class="text-muted">Feb 4, 2022</small>
+                        </div>
+                        <div>
+                            <span class="px-5">${amount}</span>
+                            <button type="button" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </li>
+                `;
+        }
     </script>
 </body>
 </html>
