@@ -21,6 +21,7 @@
 <body>
     <nav class="navbar navbar-dark bg-dark">
         <span class="navbar-brand mb-0 h1">Xpense</span>
+        <span class="navbar-brand mb-0 h1" id="totalExpenseHeading"></span>
     </nav>
     <div class="container-fluid bg-light" style="min-height: 100vh;">
         <div class="container">
@@ -60,17 +61,6 @@
             <div>
                 <ul class="list-group" id="expenseTable">
                 </ul>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between">
-                        <div class="d-flex flex-column">
-                            Total Expense
-                        </div>
-                        <div>
-                            <i class="fas fa-rupee-sign"></i>
-                            <span class="px-5" id="totalExpenseHeading"></span>
-                        </div>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
@@ -92,7 +82,7 @@
         totalExpenseEl.textContent = totalExpense;
 
         //all expenses at one place
-        const allExpenses = [];
+        allExpenses = [];
 
         //on btn click add input expense to total
         function addExpenseToTotal() {
@@ -107,23 +97,19 @@
             //add to object
             expenseItem.amount = expense;
             expenseItem.description = descValue;
+            expenseItem.moment = new Date();
 
             //add to total expense
             totalExpense = totalExpense + expense;
 
             //set heading element to total expense
-            const someText = `${totalExpense}`;
+            const someText = `Total Expense: ${totalExpense}`;
             totalExpenseEl.textContent = someText;
-
-            expenseItem.totalExpense = totalExpense;
 
             allExpenses.push(expenseItem);
 
             //show the table here\
-            const allExpenseHtml = allExpenses.map(expenseItem => createItemList(expenseItem)).join('');
-            console.clear();
-            console.log(allExpenseHtml);
-            expenseTableEl.innerHTML = allExpenseHtml;
+            renderList(allExpenses);
             inputExpenseEl.value = "";
             inputDescEl.value = "";
         }
@@ -134,17 +120,42 @@
         //listen to click event
         buttonEl.addEventListener("click", addExpenseToTotal, false);
 
+        //controller functions
+        function getDateString(moment) {
+            return moment.toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+        }
+
+        function deleteItem(dateString) {
+            totalExpense = 0;
+            const updatedArray = allExpenses.filter(expenseItem => expenseItem.moment.valueOf() !== dateString)
+                                    .map(expenseItem => {
+                                        totalExpense = totalExpense + expenseItem.amount;
+                                        return expenseItem;
+                                    });
+            renderList(updatedArray);
+            allExpenses = updatedArray;
+            const someText = `Total Expense: ${totalExpense}`;
+            totalExpenseEl.textContent = someText;
+        }
+
         //View layer
-        function createItemList({ description, amount }) {
+        function renderList(arrOfList) {
+            const allExpenseHtml = arrOfList.map(expenseItem => createItemList(expenseItem)).join('');
+            expenseTableEl.innerHTML = allExpenseHtml;
+        }
+        function createItemList({ description, amount, moment }) {
             return `
                 <li class="list-group-item d-flex justify-content-between">
                         <div class="d-flex flex-column">
                             ${description}
-                            <small class="text-muted">Feb 4, 2022</small>
+                            <small class="text-muted">${getDateString(moment)}</small>
                         </div>
                         <div>
                             <span class="px-5">${amount}</span>
-                            <button type="button" class="btn btn-outline-danger btn-sm">
+                            <button 
+                                type="button" 
+                                class="btn btn-outline-danger btn-sm"
+                                onClick="deleteItem(${moment.valueOf()})">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
